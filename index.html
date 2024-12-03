@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modificar Archivo TXT</title>
+</head>
+<body>
+    <h1>Modificar Posición 78 del Archivo TXT</h1>
+    <input type="file" id="fileInput" accept=".txt">
+    <button id="processButton" disabled>Procesar Archivo</button>
+    <a id="downloadLink" style="display: none;">Descargar Archivo Modificado</a>
+
+    <script>
+document.getElementById('fileInput').addEventListener('change', function (event) {
+    const file = event.target.files[0];
+    if (file && file.type === "text/plain") {
+        document.getElementById('processButton').disabled = false;
+    } else {
+        alert("Por favor, sube un archivo .txt válido.");
+        document.getElementById('processButton').disabled = true;
+    }
+});
+
+document.getElementById('processButton').addEventListener('click', function () {
+    const file = document.getElementById('fileInput').files[0];
+
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const lines = e.target.result.split('\n');
+            const modifiedLines = lines.map(line => {
+                if (line.length >= 77) {
+                    return line.slice(0, 76) + '01' + line.slice(78);
+                } else {
+                    return line; // Si la línea es más corta, se deja como está.
+                }
+            });
+
+            const modifiedContent = modifiedLines.join('\n');
+            const blob = new Blob([modifiedContent], { type: 'text/plain' });
+
+            const downloadLink = document.getElementById('downloadLink');
+            downloadLink.href = URL.createObjectURL(blob);
+            downloadLink.download = 'archivo_modificado.txt';
+            downloadLink.style.display = 'inline';
+            downloadLink.textContent = 'Descargar Archivo Modificado';
+        };
+
+        reader.readAsText(file);
+    }
+});
+
+</script>
+</body>
+</html>
